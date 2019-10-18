@@ -1,0 +1,7 @@
+# Python: compiled and cached files
+*.pyc
+__pycache__/
+
+
+# IDE generated files
+.vscode/
