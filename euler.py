@@ -8,7 +8,7 @@ import os.path
 ###############################################################################
 # Utilities
 ###############################################################################
-def convert_range_string(range_string):
+def convert_range_string_to_list(range_string):
     """Convert a range string into a list containing all values in the
     values represented by the range string.
 
@@ -17,13 +17,20 @@ def convert_range_string(range_string):
 
     Return:
         A list of all the values contained in the range string.
+
+    Examples:
+        "1"         -> [1]
+        "1..3"      -> [1,2,3]
+        "1..3,5"    -> [1,2,3,5]
+        "1..3,5..7" -> [1,2,3,5,6,7]
+        "4..6,1..3" -> [1,2,3,4,5,6]
     """
     re_valid_range_string = re.compile(r"^(\d+)(\.\.(\d+))?$")
     numeric_list = []
 
     range_list = range_string.split(",")
     for r in range_list:
-        matches = re_valid_range_string.match(r)
+        matches = re_valid_range_string.match(r.strip())
         if matches is None:
             errmsg = "Malformed range string {} - must be of the form " + \
                      "x[..y] and can be comma separated"
@@ -33,29 +40,30 @@ def convert_range_string(range_string):
         if end is None:
             end = start
 
+        # The ending value of the range_string's range is inclusive unlike
+        # Python's range. Add 1 to end to adjust for this.
         start = int(start)
         end = int(end) + 1
 
         numeric_list += list(range(start, end))
 
-    return numeric_list
+    # Return a sorted list for easier processing
+    return sorted(numeric_list)
 
 
 def get_import_paths(problem, versions):
     """Return a list of import paths for each solution of the specified
     problem. This list can be used to import (and run) each version of
-    the solution.
+    the solution for the specified problem. Note that if a version in
+    the parameters is not implemented, it will be skipped and a warning
+    will be printed.
 
     Parameters:
-        problem     The problem whose solutions' import paths will be
-                    returned
-
-        versions    The version of the solutions whose import paths to
-                    return'
+        problem     The problem whose solution you want to import
+        versions    List of versions of the solution you want to import
 
     Return:
-        A list containint the import paths of each implemented solution
-        to the specified problem.
+        A list of the import paths of each implemented solution.
     """
     # Verify that the requested problem has been implemented
     problem_name = "problem{:03}".format(problem)
@@ -101,7 +109,7 @@ def run_solution(import_path):
                         solution to a particular problem
 
     Return:
-        The return value of the executed solution
+        The return value of the executed solution.
     """
     imported = importlib.import_module(import_path)
     solution = getattr(imported, "solution")
@@ -112,7 +120,14 @@ def run_solution(import_path):
 # Argument Parsing and Main Function
 ###############################################################################
 def argparse_setup():
-    """Initialize argument parser."""
+    """Initialize the argument parser.
+
+    Parameters:
+        None
+
+    Return:
+        None
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("--count", "-c", default=1, type=int,
                         help="The number of times to run the solution - " + \
@@ -140,18 +155,11 @@ def argparse_format(args):
     Return:
         None. The args parameter is modified in place.
     """
-    args.version = convert_range_string(args.version)
+    args.version = convert_range_string_to_list(args.version)
     return args
 
 
 def main():
-    def run(problem, versions):
-        try:
-            return get_import_paths(problem, versions)
-        except Exception as e:
-            print(e)
-            return None
-
     args = argparse_setup()
     argparse_format(args)
 
