@@ -1,5 +1,8 @@
 import argparse
+import importlib
 import re
+import os
+import os.path
 
 
 ###############################################################################
@@ -36,6 +39,73 @@ def convert_range_string(range_string):
         numeric_list += list(range(start, end))
 
     return numeric_list
+
+
+def get_import_paths(problem, versions):
+    """Return a list of import paths for each solution of the specified
+    problem. This list can be used to import (and run) each version of
+    the solution.
+
+    Parameters:
+        problem     The problem whose solutions' import paths will be
+                    returned
+
+        versions    The version of the solutions whose import paths to
+                    return'
+
+    Return:
+        A list containint the import paths of each implemented solution
+        to the specified problem.
+    """
+    # Verify that the requested problem has been implemented
+    problem_name = "problem{:03}".format(problem)
+    problem_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)),
+                                "solutions",
+                                problem_name)
+    if not os.path.exists(problem_dir):
+        errmsg = "Solution to problem {:03} not implemented"
+        raise NotImplementedError(errmsg.format(problem))
+
+    # Get all available solution versions for the given problem
+    version_files = next(os.walk(problem_dir))[-1]
+    version_files = [os.path.splitext(f)[0] for f in version_files]
+    if len(version_files) == 0:
+        # No versions of the solution are implemented. The solution to this
+        # problem is not implemented.
+        errmsg = "Solution to problem {:03} not implemented"
+        raise NotImplementedError(errmsg.format(problem))
+
+    # Filter out any requested versions that have not been implemented, and
+    # convert all implemented versions into the equivalent import path for
+    # each version (i.e. solutions.problemXXX.verisionYYY)
+    implemented_versions = []
+    for version in versions:
+        version_string = "version{:03}".format(version)
+        if version_string in version_files:
+            import_path = "solutions.{}.{}".format(problem_name,
+                                                   version_string)
+            implemented_versions.append(import_path)
+        else:
+            warnstr = "Problem {:03} Version {:03} not implemented - skipping"
+            print(warnstr.format(problem, version))
+
+    return implemented_versions
+
+
+def run_solution(import_path):
+    """Runs the solution implemented in the file specified by the
+    import path.
+
+    Parameters:
+        import_path     The import path to the file that implements a
+                        solution to a particular problem
+
+    Return:
+        The return value of the executed solution
+    """
+    imported = importlib.import_module(import_path)
+    solution = getattr(imported, "solution")
+    return solution()
 
 
 ###############################################################################
@@ -75,8 +145,19 @@ def argparse_format(args):
 
 
 def main():
+    def run(problem, versions):
+        try:
+            return get_import_paths(problem, versions)
+        except Exception as e:
+            print(e)
+            return None
+
     args = argparse_setup()
     argparse_format(args)
+
+    import_paths = get_import_paths(args.problem, args.version)
+    for import_path in import_paths:
+        run_solution(import_path)
 
 
 if __name__ == "__main__":
