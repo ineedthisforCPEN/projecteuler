@@ -136,9 +136,9 @@ def argparse_setup():
                         help="Which Euler problem to run")
     parser.add_argument("--time", "-t", action="store_true",
                         help="Times the solution to measure its performance")
-    parser.add_argument("--verbose", "-v", action="store_true",
+    parser.add_argument("--verbose", "-V", action="store_true",
                         help="Prints more detailed information to stdout")
-    parser.add_argument("--version", "-V", default="0", type=str,
+    parser.add_argument("--version", "-v", default="0", type=str,
                         help="Which versions of the solution to run " + \
                              "(e.g. '1', '1..3', '1..3,5..7')")
     args = parser.parse_args()
