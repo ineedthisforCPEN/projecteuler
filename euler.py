@@ -69,7 +69,12 @@ def get_problem_class(problem):
     problem_class = problem_name[0].upper() + problem_name[1:]
 
     import_path = "solutions.{}.{}".format(problem_name, problem_name)
-    imported = importlib.import_module(import_path)
+    try:
+        imported = importlib.import_module(import_path)
+    except ModuleNotFoundError:
+        errmsg = "Problem {} not implemented"
+        errmsg = errmsg.format(const.PROBLEM_NUMBER.format(problem))
+        raise NotImplementedError(errmsg)
     return getattr(imported, problem_class)
 
 
