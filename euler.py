@@ -3,6 +3,7 @@ import importlib
 import re
 import os
 import os.path
+import sys
 
 import constants as const
 
@@ -53,74 +54,23 @@ def convert_range_string_to_list(range_string):
     return sorted(numeric_list)
 
 
-def get_import_paths(problem, versions):
-    """Return a list of import paths for each solution of the specified
-    problem. This list can be used to import (and run) each version of
-    the solution for the specified problem. Note that if a version in
-    the parameters is not implemented, it will be skipped and a warning
-    will be printed.
+def get_problem_class(problem):
+    """Import and return the specified problem and its implemented
+    solutions.
 
     Parameters:
-        problem     The problem whose solution you want to import
-        versions    List of versions of the solution you want to import
+        problem     The problem to import
 
     Return:
-        A list of the import paths of each implemented solution.
+        The Problem class that provides problem details and implemented
+        solutions.
     """
-    # Verify that the requested problem has been implemented
     problem_name = const.PROBLEM_NAME.format(problem)
-    problem_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                                "solutions",
-                                problem_name)
-    if not os.path.exists(problem_dir):
-        errmsg = "Solution to problem " + \
-                 const.PROBLEM_NUMBER + \
-                 " not implemented"
-        raise NotImplementedError(errmsg.format(problem))
+    problem_class = problem_name[0].upper() + problem_name[1:]
 
-    # Get all available solution versions for the given problem
-    version_files = next(os.walk(problem_dir))[-1]
-    version_files = [os.path.splitext(f)[0] for f in version_files]
-    if len(version_files) == 0:
-        # No versions of the solution are implemented. The solution to this
-        # problem is not implemented.
-        errmsg = "Solution to problem " + \
-                 const.PROBLEM_NUMBER + \
-                 " not implemented"
-        raise NotImplementedError(errmsg.format(problem))
-
-    # Filter out any requested versions that have not been implemented, and
-    # convert all implemented versions into the equivalent import path for
-    # each version (i.e. solutions.problemXXX.verisionYYY)
-    implemented_versions = []
-    for version in versions:
-        version_string = const.VERSION_NAME.format(version)
-        if version_string in version_files:
-            import_path = "solutions.{}.{}".format(problem_name,
-                                                   version_string)
-            implemented_versions.append(import_path)
-        else:
-            warnstr = "Problem {} Version {} not implemented - skipping"
-            warnstr = warnstr.format(const.PROBLEM_NUMBER, const.VERSION_NAME)
-            print(warnstr.format(problem, version))
-
-    return implemented_versions
-
-
-def run_solution(import_path):
-    """Runs the solution implemented in the file specified by the
-    import path.
-
-    Parameters:
-        import_path     The import path to the file that implements a
-                        solution to a particular problem
-
-    Return:
-        The return value of the executed solution.
-    """
+    import_path = "solutions.{}.{}".format(problem_name, problem_name)
     imported = importlib.import_module(import_path)
-    solution = getattr(imported, "solution")
-    return solution()
+    return getattr(imported, problem_class)
 
 
 ###############################################################################
@@ -143,7 +93,7 @@ def argparse_setup():
                         help="Which Euler problem to run")
     parser.add_argument("--time", "-t", action="store_true",
                         help="Times the solution to measure its performance")
-    parser.add_argument("--version", "-v", default="0", type=str,
+    parser.add_argument("--versions", "-v", default="0", type=str,
                         help="Which versions of the solution to run " + \
                              "(e.g. '1', '1..3', '1..3,5..7')")
     args, unknown = parser.parse_known_args()
@@ -160,18 +110,44 @@ def argparse_format(args):
     Return:
         None. The args parameter is modified in place.
     """
-    args.version = convert_range_string_to_list(args.version)
+    args.versions = convert_range_string_to_list(args.versions)
     return args
 
 
 def main():
-    args, _ = argparse_setup()
+    # Get and format command line arguments
+    args, problem_args = argparse_setup()
     argparse_format(args)
 
-    import_paths = get_import_paths(args.problem, args.version)
-    for import_path in import_paths:
-        run_solution(import_path)
+    # Find the appropriate problem (if it exists) and pass the unhandled
+    # command line arguments into the problme class
+    problem = get_problem_class(args.problem)(problem_args)
+    for version in args.versions:
+        if not problem.is_version_implemented(version):
+            # Specified version is not implemented. Let the user know, then
+            # ignore this version and continue trying to run the remaining
+            # versions.
+            warnstr = "Problem {p} Version {v} not implemented - skipping"
+            warnstr = warnstr.format(p=const.PROBLEM_NUMBER.format(args.problem),
+                                     v=const.VERSION_NUMBER.format(version))
+            print(warnstr)
+            continue
+
+        # This version of the solution exists. Run it and show the results.
+        retval = problem.run_solution(version)
+        infostr = "Problem {p} Version {v} - returned {r}"
+        infostr = infostr.format(p=const.PROBLEM_NUMBER.format(args.problem),
+                                 v=const.VERSION_NUMBER.format(version),
+                                 r=retval)
+        print(infostr)
 
 
 if __name__ == "__main__":
+    # Add projecteuler to system path so that utilities and constants can be
+    # imported from any file.
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    root_dir = os.path.abspath(os.path.join(current_dir, ".."))
+    if root_dir not in sys.path:
+        sys.path.append(root_dir)
+
     main()
