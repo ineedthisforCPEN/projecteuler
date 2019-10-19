@@ -13,6 +13,9 @@ VERSION_NUMBER = "{{:0{}}}".format(VERSION_DIGITS)
 PROBLEM_NAME = "problem" + PROBLEM_NUMBER
 VERSION_NAME = "version" + VERSION_NUMBER
 
+PROBLEM_FILE = PROBLEM_NAME + ".py"
+VERSION_FILE = VERSION_NAME + ".py"
+
 
 # Regular expressions constants
 RE_PROBLEM_RAW = r"problem\d{{{}}}".format(PROBLEM_DIGITS)
