@@ -4,6 +4,8 @@ import re
 import os
 import os.path
 
+import constants as const
+
 
 ###############################################################################
 # Utilities
@@ -66,12 +68,14 @@ def get_import_paths(problem, versions):
         A list of the import paths of each implemented solution.
     """
     # Verify that the requested problem has been implemented
-    problem_name = "problem{:03}".format(problem)
+    problem_name = const.PROBLEM_NAME.format(problem)
     problem_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)),
                                 "solutions",
                                 problem_name)
     if not os.path.exists(problem_dir):
-        errmsg = "Solution to problem {:03} not implemented"
+        errmsg = "Solution to problem " + \
+                 const.PROBLEM_NUMBER + \
+                 " not implemented"
         raise NotImplementedError(errmsg.format(problem))
 
     # Get all available solution versions for the given problem
@@ -80,7 +84,9 @@ def get_import_paths(problem, versions):
     if len(version_files) == 0:
         # No versions of the solution are implemented. The solution to this
         # problem is not implemented.
-        errmsg = "Solution to problem {:03} not implemented"
+        errmsg = "Solution to problem " + \
+                 const.PROBLEM_NUMBER + \
+                 " not implemented"
         raise NotImplementedError(errmsg.format(problem))
 
     # Filter out any requested versions that have not been implemented, and
@@ -88,13 +94,14 @@ def get_import_paths(problem, versions):
     # each version (i.e. solutions.problemXXX.verisionYYY)
     implemented_versions = []
     for version in versions:
-        version_string = "version{:03}".format(version)
+        version_string = const.VERSION_NAME.format(version)
         if version_string in version_files:
             import_path = "solutions.{}.{}".format(problem_name,
                                                    version_string)
             implemented_versions.append(import_path)
         else:
-            warnstr = "Problem {:03} Version {:03} not implemented - skipping"
+            warnstr = "Problem {} Version {} not implemented - skipping"
+            warnstr = warnstr.format(const.PROBLEM_NUMBER, const.VERSION_NAME)
             print(warnstr.format(problem, version))
 
     return implemented_versions
