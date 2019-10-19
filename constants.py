@@ -2,17 +2,21 @@ import re
 
 
 # Formatting constants
-MIN_PROBLEM_DIGITS = 3
-MAX_PROBLEM_DIGITS = 3
+PROBLEM_DIGITS = 3
+VERSION_DIGITS = 3
 
-MIN_VERSION_DIGITS = 3
-MAX_VERSION_DIGITS = 3
+
+# String and format string constants
+PROBLEM_NUMBER = "{{:0{}}}".format(PROBLEM_DIGITS)
+VERSION_NUMBER = "{{:0{}}}".format(VERSION_DIGITS)
+
+PROBLEM_NAME = "problem" + PROBLEM_NUMBER
+VERSION_NAME = "version" + VERSION_NUMBER
+
 
 # Regular expressions constants
-RE_PROBLEM_RAW = r"problem\d{{{min},{max}}}".format(min=MIN_PROBLEM_DIGITS,
-                                                    max=MAX_PROBLEM_DIGITS)
-RE_VERSION_RAW = r"version\d{{{min},{max}}}".format(min=MIN_VERSION_DIGITS,
-                                                    max=MAX_VERSION_DIGITS)
+RE_PROBLEM_RAW = r"problem\d{{{}}}".format(PROBLEM_DIGITS)
+RE_VERSION_RAW = r"version\d{{{}}}".format(VERSION_DIGITS)
 
 RE_PROBLEM = re.compile(RE_PROBLEM_RAW)
 RE_VERSION = re.compile(RE_VERSION_RAW)
