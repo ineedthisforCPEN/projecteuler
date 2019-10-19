@@ -146,8 +146,8 @@ def argparse_setup():
     parser.add_argument("--version", "-v", default="0", type=str,
                         help="Which versions of the solution to run " + \
                              "(e.g. '1', '1..3', '1..3,5..7')")
-    args = parser.parse_args()
-    return args
+    args, unknown = parser.parse_known_args()
+    return (args, unknown)
 
 
 def argparse_format(args):
@@ -165,7 +165,7 @@ def argparse_format(args):
 
 
 def main():
-    args = argparse_setup()
+    args, _ = argparse_setup()
     argparse_format(args)
 
     import_paths = get_import_paths(args.problem, args.version)
