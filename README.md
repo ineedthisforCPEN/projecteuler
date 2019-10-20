@@ -12,24 +12,37 @@ performance of some (or all) of the solutions.
 
 ### Examples
 
-`python projecteuler.py --problem 1 --version 1..3,5,8..10`
+`python projecteuler.py --list`\
+Lists all implemented problems
+
+`python projecteuler.py --list --problem 1`\
+Lists all implementated versions of the solution to problem 1
+
+`python projecteuler.py --problem 1 --version 1..3,5,8..10`\
 Run solutions to problem 1. Will run solution versions 1, 2, 3, 5, 8, 9, 10
 
-`python projecteuler.py --time --problem 2 --version 3`
+`python projecteuler.py --time --problem 2 --version 3`\
 Run the version 3 of the solution to problem 2 and time the result
 
-`python projecteuler.py --time --count 3 --problem 2 --version 3`
+`python projecteuler.py --time --count 3 --problem 2 --version 3`\
 Same as example above, but run and time 3 iterations
 
 ### Required Arguments
 
+Though there are cases where `projecteuler` can run without these arguments, they are required to actually execute the
+solution code.
+
 `-p, --problem` The problem whose solution to run.
+
 `-v, --version` A list of versions of the solution to run.
 
 ### Options
 
 `--count`   The number of times to run the specified solution(s). This is only applicable when `--time` flag is set
-`--time`    When set, times every solution
+
+`--list`    List the implemented problems. If the `--problem` argument is given, list the implemented solution versions
+
+`--time`    When set, times every run of every solution version
 
 ## Adding Problem Files
 
@@ -54,7 +67,7 @@ This generates version `VERSION_NUMBER` of the solution for problem `PROBLEM_NUM
 using this information and the version template.
 
 Note that `generate_version.py` will not skip versions. This means that if version 1 of the solution is not implemented,
-it will fail to create version2 of the solution.
+it will fail to create version 2 of the solution.
 
 By default, `generate_version.py` fails if the version file to generate already exists, as we don't want to accidentally
 overwrite an existing problem file. To overwrite the existing version file, use the `--force` flag.
