@@ -91,17 +91,28 @@ def argparse_setup():
         None
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument("--count", "-c", default=1, type=int,
-                        help="The number of times to run the solution - " + \
-                             "only applied when the --time flag is set")
-    parser.add_argument("--problem", "-p", default=0, type=int,
+
+    # Required arguments
+    parser.add_argument("--problem", "-p", type=int, required=True,
                         help="Which Euler problem to run")
-    parser.add_argument("--time", "-t", action="store_true",
-                        help="Times the solution to measure its performance")
-    parser.add_argument("--versions", "-v", default="0", type=str,
+    parser.add_argument("--versions", "-v", type=str, required=True,
                         help="Which versions of the solution to run " + \
                              "(e.g. '1', '1..3', '1..3,5..7')")
+
+    # Options
+    parser.add_argument("--count", default=1, type=int,
+                        help="The number of times to run the solution - " + \
+                             "only applied when the --time flag is set")
+    parser.add_argument("--time", action="store_true",
+                        help="Times the solution to measure its performance")
+
     args, unknown = parser.parse_known_args()
+
+    # Process any arguments as required
+    if not args.time:
+        # Count argument only applicable when timing each solution's run
+        args.count = 1
+
     return (args, unknown)
 
 
