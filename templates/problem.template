@@ -24,6 +24,8 @@ class Problem{problem_number}(classes.Problem):
         self.problem_versions = self.get_implemented_versions(__file__)
 
     def create_parser(self):
+        # THIS SECTION SHOULD BE MODIFIED
+        # ADD ANY ARGUMENTS REQUIRED TO RUN THIS PROBLEM'S SOLUTION
         parser = argparse.ArgumentParser()
         return parser
 """

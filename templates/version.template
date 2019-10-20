@@ -1,4 +1,4 @@
-# Version-specific constants
+# Version-specific constants - EDIT THESE VALUES
 VERSION_NAME = "{version_name}"
 VERSION_SUMMARY = \
 """SHORT VERSION SUMMARY
