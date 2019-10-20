@@ -1,0 +1,25 @@
+# Version-specific constants
+VERSION_NAME = "{version_name}"
+VERSION_SUMMARY = \
+"""SHORT VERSION SUMMARY
+"""
+VERSION_DESCRIPTION = \
+"""LONGER VERSION DESCRIPTION
+"""
+
+
+def solution(args):
+    """Problem {problem_number} - Version {version_number}
+
+    Parameters:
+        None.
+
+    Return:
+        None.
+    """
+    raise NotImplementedError()
+
+
+if __name__ == "__main__":
+    errmsg = "Cannot run {{}} as a standalone script"
+    raise RuntimeError(errmsg.format(VERSION_NAME))
