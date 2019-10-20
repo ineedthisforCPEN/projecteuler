@@ -8,6 +8,9 @@ import sys
 import constants as const
 
 
+PROJECT_DIR = os.path.abspath(os.path.join(os.path.abspath(__file__), ".."))
+
+
 ###############################################################################
 # Utilities
 ###############################################################################
@@ -78,6 +81,91 @@ def get_problem_class(problem):
     return getattr(imported, problem_class)
 
 
+def list_implementations(args):
+    """List all problem implementations or the implementations of a
+    given problem's solution versions.
+
+    Parameters:
+        args    The command line arguments list
+
+    Return:
+        None.
+    """
+    if args.problem is None:
+        implementations = list_problem_implementations()
+        infostr = "Implemented problems:"
+        warnstr = "No problem implementations found"
+    else:
+        implementations = list_version_implementations(args.problem)
+        infostr = "Implemented versions of problem {} solution"
+        infostr = infostr.format(args.problem)
+        warnstr = "No version implementations found for problem {}"
+        warnstr = warnstr.format(args.problem)
+
+    if len(implementations) == 0:
+        print(warnstr + "\n")
+    else:
+        print(infostr)
+        for implementation in implementations:
+            print("\t{}".format(implementation))
+        print("\n")
+
+
+def list_problem_implementations():
+    """List all implemented problems.
+
+    Parameters:
+        None
+
+    Return:
+        Returns a string list of all implemented problems.
+    """
+    implementations = []
+    solutions_dir = os.path.join(PROJECT_DIR, "solutions")
+    problems = next(os.walk(solutions_dir))[1]
+    problems = [p for p in problems if const.RE_PROBLEM.match(p) is not None]
+
+    for problem in problems:
+        problem_dir = os.path.join(solutions_dir, problem)
+        problem_file = problem + ".py"
+
+        files = next(os.walk(problem_dir))[-1]
+        if problem_file in files:
+            implementations.append(problem)
+        else:
+            warnstr = "WARNING: {p} does not contain {f} - the problem " + \
+                      "is not properly implemented. Please re-run the " + \
+                      "generate_problem tool again."
+            print(warnstr.format(p=problem, f=problem_file))
+
+    return implementations
+
+
+def list_version_implementations(problem):
+    """List all implemented versions of the given problem's solution.
+
+    Parameters:
+        problem     The problem whose solution versions to list
+
+    Return:
+        Returns a string list of all implemented solution versions.
+    """
+    implementations = []
+    problem_dir = os.path.join(PROJECT_DIR,
+                               "solutions",
+                               const.PROBLEM_NAME.format(problem))
+
+    if not os.path.exists(problem_dir):
+        return implementations
+
+    versions = next(os.walk(problem_dir))[-1]
+    for version in versions:
+        if const.RE_VERSION_FILE.match(version) is not None:
+            implementations.append(version)
+
+    return implementations
+
+
 ###############################################################################
 # Argument Parsing and Main Function
 ###############################################################################
@@ -93,9 +181,9 @@ def argparse_setup():
     parser = argparse.ArgumentParser()
 
     # Required arguments
-    parser.add_argument("--problem", "-p", type=int, required=True,
+    parser.add_argument("--problem", "-p", type=int,
                         help="Which Euler problem to run")
-    parser.add_argument("--versions", "-v", type=str, required=True,
+    parser.add_argument("--versions", "-v", type=str,
                         help="Which versions of the solution to run " + \
                              "(e.g. '1', '1..3', '1..3,5..7')")
 
@@ -103,6 +191,8 @@ def argparse_setup():
     parser.add_argument("--count", default=1, type=int,
                         help="The number of times to run the solution - " + \
                              "only applied when the --time flag is set")
+    parser.add_argument("--list", action="store_true",
+                        help="List all problem or version implementations")
     parser.add_argument("--time", action="store_true",
                         help="Times the solution to measure its performance")
 
@@ -126,7 +216,8 @@ def argparse_format(args):
     Return:
         None. The args parameter is modified in place.
     """
-    args.versions = convert_range_string_to_list(args.versions)
+    if args.versions is not None:
+        args.versions = convert_range_string_to_list(args.versions)
     return args
 
 
@@ -134,6 +225,16 @@ def main():
     # Get and format command line arguments
     args, problem_args = argparse_setup()
     argparse_format(args)
+
+    # Handle any special options that have priority
+    if args.list:
+        list_implementations(args)
+        return
+
+    # If any of the above options were not specified, then the "problem"
+    # argument is mandatory. Perform the check here.
+    if args.problem is None:
+        raise TypeError("Missing required argument: 'problem'")
 
     # Find the appropriate problem (if it exists) and pass the unhandled
     # command line arguments into the problme class
@@ -161,8 +262,7 @@ def main():
 if __name__ == "__main__":
     # Add projecteuler to system path so that utilities and constants can be
     # imported from any file.
-    current_dir = os.path.dirname(os.path.realpath(__file__))
-    root_dir = os.path.abspath(os.path.join(current_dir, ".."))
+    root_dir = os.path.join(PROJECT_DIR, "..")
     if root_dir not in sys.path:
         sys.path.append(root_dir)
 
