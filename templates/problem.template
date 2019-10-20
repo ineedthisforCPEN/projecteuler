@@ -1,0 +1,29 @@
+import argparse
+
+from projecteuler import classes
+
+
+# Problem-specific constants
+PROBLEM_NAME = "{problem_name}"
+PROBLEM_SUMMARY = \
+"""{problem_summary}
+"""
+PROBLEM_DESCRIPTION = \
+"""{problem_description}
+"""
+
+
+class Problem{problem_number}(classes.Problem):
+    def __init__(self, args):
+        self.parser = self.create_parser()
+        self.args = self.parser.parse_args(args)
+
+        self.problem_name = PROBLEM_NAME
+        self.problem_summary = PROBLEM_SUMMARY
+        self.problem_desc = PROBLEM_DESCRIPTION
+        self.problem_versions = self.get_implemented_versions(__file__)
+
+    def create_parser(self):
+        parser = argparse.ArgumentParser()
+        return parser
+"""
