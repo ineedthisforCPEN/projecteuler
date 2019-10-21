@@ -8,23 +8,23 @@ performance of some (or all) of the solutions.
 
 ## Usage
 
-`python projecteuler.py [options] --problem PROBLEM --version VERSION`
+`python euler.py [options] --problem PROBLEM --version VERSION`
 
 ### Examples
 
-`python projecteuler.py --list`\
+`python euler.py --list`\
 Lists all implemented problems
 
-`python projecteuler.py --list --problem 1`\
+`python euler.py --list --problem 1`\
 Lists all implementated versions of the solution to problem 1
 
-`python projecteuler.py --problem 1 --version 1..3,5,8..10`\
+`python euler.py --problem 1 --version 1..3,5,8..10`\
 Run solutions to problem 1. Will run solution versions 1, 2, 3, 5, 8, 9, 10
 
-`python projecteuler.py --time --problem 2 --version 3`\
+`python euler.py --time --problem 2 --version 3`\
 Run the version 3 of the solution to problem 2 and time the result
 
-`python projecteuler.py --time --count 3 --problem 2 --version 3`\
+`python euler.py --time --count 3 --problem 2 --version 3`\
 Same as example above, but run and time 3 iterations
 
 ### Required Arguments
@@ -61,10 +61,11 @@ overwrite an existing problem file. To overwrite the existing problem file, use 
 
 To add a version file, use the tool `generate_version.py` from the `tools` directory.
 
-`python generate_version.py [--force] PROBLEM_NUMBER VERSION_NUMBER`
+`python generate_version.py [--force] PROBLEM_NUMBER VERSION_RANGE`
 
-This generates version `VERSION_NUMBER` of the solution for problem `PROBLEM_NUMBER`. The tool generates a version file
-using this information and the version template.
+This tries to generate all version in `VERSION_RANGE` of the solution for problem `PROBLEM_NUMBER`. The tool generates a
+version file using this information and the version template. A version range must be either a single number or
+formatted as `start..end` which represents a range of number from `start` to `end` inclusive (i.e. 1..4 -> 1,2,3,4).
 
 Note that `generate_version.py` will not skip versions. This means that if version 1 of the solution is not implemented,
 it will fail to create version 2 of the solution.
