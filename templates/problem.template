@@ -13,6 +13,14 @@ PROBLEM_DESCRIPTION = \
 """
 
 
+class ProblemParser(argparse.ArgumentParser):
+    def error(self, message):
+        print(PROBLEM_NAME)
+        self.print_help()
+        print("\nError in argument list: " + message)
+        self.exit()
+
+
 class Problem{problem_number}(classes.Problem):
     def __init__(self, args):
         self.parser = self.create_parser()
@@ -26,6 +34,5 @@ class Problem{problem_number}(classes.Problem):
     def create_parser(self):
         # THIS SECTION SHOULD BE MODIFIED
         # ADD ANY ARGUMENTS REQUIRED TO RUN THIS PROBLEM'S SOLUTION
-        parser = argparse.ArgumentParser()
+        parser = ProblemParser(description=PROBLEM_DESCRIPTION)
         return parser
-"""

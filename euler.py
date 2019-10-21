@@ -6,6 +6,10 @@ import os.path
 import sys
 
 import constants as const
+import utils.arguments as utils_args
+
+
+PROJECT_DIR = os.path.abspath(os.path.join(os.path.abspath(__file__), ".."))
 
 
 PROJECT_DIR = os.path.abspath(os.path.join(os.path.abspath(__file__), ".."))
@@ -217,7 +221,7 @@ def argparse_format(args):
         None. The args parameter is modified in place.
     """
     if args.versions is not None:
-        args.versions = convert_range_string_to_list(args.versions)
+        args.versions = utils_args.extended_range_string_to_list(args.versions)
     return args
 
 
