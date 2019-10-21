@@ -28,4 +28,3 @@ class Problem{problem_number}(classes.Problem):
         # ADD ANY ARGUMENTS REQUIRED TO RUN THIS PROBLEM'S SOLUTION
         parser = argparse.ArgumentParser()
         return parser
-"""
