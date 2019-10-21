@@ -5,9 +5,6 @@ from projecteuler import classes
 
 # Problem-specific constants
 PROBLEM_NAME = "{problem_name}"
-PROBLEM_SUMMARY = \
-"""{problem_summary}
-"""
 PROBLEM_DESCRIPTION = \
 """{problem_description}
 """
