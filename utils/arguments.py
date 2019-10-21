@@ -61,16 +61,3 @@ def range_string_to_list(range_string):
     # The ending value of the range_string's range is inclusive unlike
     # Python's range. Add 1 to end to adjust for this.
     return list(range(int(start), int(end) + 1))
-
-
-if __name__ == "__main__":
-    range_strings = [
-        "1",
-        "1..3",
-        "1..3,5",
-        "1..3,5..7",
-        "4..6,1..3"
-    ]
-
-    for rs in range_strings:
-        print("{} -> {}".format(rs, convert_extended_range_string_to_list(rs)))
