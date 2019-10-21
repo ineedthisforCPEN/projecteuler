@@ -1,6 +1,7 @@
 import argparse
 import os
 import os.path
+import re
 import sys
 import textwrap
 
@@ -19,7 +20,7 @@ def argument_parser():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("problem", type=int)
-    parser.add_argument("version", type=int)
+    parser.add_argument("version", type=str)
     parser.add_argument("--force", "-f", action="store_true")
     args = parser.parse_args()
 
@@ -28,10 +29,6 @@ def argument_parser():
                                const.PROBLEM_NAME.format(args.problem))
     problem_file = os.path.join(problem_dir,
                                 const.PROBLEM_FILE.format(args.problem))
-    version_file = os.path.join(problem_dir,
-                                const.VERSION_FILE.format(args.version))
-    prev_version_file = os.path.join(problem_dir,
-                                     const.VERSION_FILE.format(args.version-1))
 
     # Process and handle errors for problem argument
     if args.problem < 1:
@@ -44,22 +41,62 @@ def argument_parser():
                                n=args.problem)
         raise NotImplementedError(errmsg)
 
+    # Process the version argument
+    versions = convert_range_string_to_list(args.version)
+    prev_version_file = os.path.join(problem_dir,
+                                     const.VERSION_FILE.format(versions[0]-1))
+
     # Process and handle errors for version argument
-    if args.version < 1:
-        errmsg = "Invalid version number {} - must be positive integer"
-        raise ValueError(errmsg.format(args.version))
-    if args.version > 1 and not os.path.exists(prev_version_file):
-        errmsg = "Invalid version number {n} - cannot implement version " + \
-                 "{n} before version {p}"
-        raise ValueError(errmsg.format(n=args.version, p=args.version-1))
-    if not args.force and os.path.exists(version_file):
-        errmsg = "Version {} is already implemented. If you wish to " + \
-                 "continue, please use the -f (or --force) flag when " + \
-                 "running generate_version"
-        errmsg = errmsg.format(args.version)
+    overlap = False
+    if versions[0] < 1:
+        raise ValueError("All version numbers must be greater than 0")
+    if versions[0] > 1 and not os.path.exists(prev_version_file):
+        errmsg = "Invalid version range - cannot implement version " + \
+                 "{n} before implementing version {p}"
+        raise ValueError(errmsg.format(n=versions[0], p=versions[0]-1))
+    for version in versions:
+        version_file = os.path.join(problem_dir,
+                                    const.VERSION_FILE.format(version))
+        if not args.force and os.path.exists(version_file):
+            overlap = True
+            warnstr = "Version {} already implemented".format(version)
+            print("WARNING: {}".format(warnstr))
+    if overlap:
+        errmsg = "Some of the versions specified already exist. If you " + \
+                 "wish to continue (and overwrite the existing files) " + \
+                 "please use the --force flag"
         raise ValueError(errmsg)
 
-    return (args.problem, args.version)
+    return (args.problem, versions)
+
+
+def convert_range_string_to_list(range_string):
+    """Convert a range string into a list containing all values in the
+    values represented by the range string.
+
+    Parameters:
+        range_string    The range string to convert into a list
+
+    Return:
+        A list of all the values contained in the range string.
+
+    Examples:
+        "1"         -> [1]
+        "1..3"      -> [1,2,3]
+    """
+    re_valid_range_string = re.compile(r"^(\d+)(\.\.(\d+))?$")
+    matches = re_valid_range_string.match(range_string.strip())
+
+    if matches is None:
+        errmsg = "Malformed range string {} - must be of the form " + \
+                    "x[..y] and can be comma separated"
+        raise ValueError(errmsg.format(range_string))
+
+    start, _, end = matches.groups()
+    if end is None:
+        end = start
+
+    return range(int(start), int(end) + 1)
 
 
 def create_version_from_template(problem, version):
@@ -99,9 +136,10 @@ def create_version_from_template(problem, version):
 
 
 def main():
-    problem, version = argument_parser()
-    create_version_from_template(problem, version)
-    print("Generated version file for version {}".format(version))
+    problem, versions = argument_parser()
+    for version in versions:
+        create_version_from_template(problem, version)
+        print("Generated version file for version {}".format(version))
 
 
 if __name__ == "__main__":
