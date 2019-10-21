@@ -42,7 +42,7 @@ def argument_parser():
         raise NotImplementedError(errmsg)
 
     # Process the version argument
-    versions = convert_range_string_to_list(args.version)
+    versions = utils_args.range_string_to_list(args.version)
     prev_version_file = os.path.join(problem_dir,
                                      const.VERSION_FILE.format(versions[0]-1))
 
@@ -68,35 +68,6 @@ def argument_parser():
         raise ValueError(errmsg)
 
     return (args.problem, versions)
-
-
-def convert_range_string_to_list(range_string):
-    """Convert a range string into a list containing all values in the
-    values represented by the range string.
-
-    Parameters:
-        range_string    The range string to convert into a list
-
-    Return:
-        A list of all the values contained in the range string.
-
-    Examples:
-        "1"         -> [1]
-        "1..3"      -> [1,2,3]
-    """
-    re_valid_range_string = re.compile(r"^(\d+)(\.\.(\d+))?$")
-    matches = re_valid_range_string.match(range_string.strip())
-
-    if matches is None:
-        errmsg = "Malformed range string {} - must be of the form " + \
-                    "x[..y] and can be comma separated"
-        raise ValueError(errmsg.format(range_string))
-
-    start, _, end = matches.groups()
-    if end is None:
-        end = start
-
-    return range(int(start), int(end) + 1)
 
 
 def create_version_from_template(problem, version):
@@ -149,4 +120,5 @@ if __name__ == "__main__":
         sys.path.append(import_dir)
 
     import projecteuler.constants as const
+    import projecteuler.utils.arguments as utils_args
     main()
