@@ -75,7 +75,7 @@ def get_problem_class(problem):
     problem_name = const.PROBLEM_NAME.format(problem)
     problem_class = problem_name[0].upper() + problem_name[1:]
 
-    import_path = "solutions.{}.{}".format(problem_name, problem_name)
+    import_path = "solutions.{p}.{p}".format(p=problem_name)
     try:
         imported = importlib.import_module(import_path)
     except ModuleNotFoundError:
@@ -83,6 +83,23 @@ def get_problem_class(problem):
         errmsg = errmsg.format(const.PROBLEM_NUMBER.format(problem))
         raise NotImplementedError(errmsg)
     return getattr(imported, problem_class)
+
+
+def get_problem_desc(problem):
+    """Read the problem file and return its description.
+
+    This function does handle exceptions - the problem must be
+    implemented when you call this function.
+
+    Parameters:
+        problem     The problem whose description to return
+
+    Return:
+        The description of the specified problem.
+    """
+    import_path = "solutions.{p}.{p}".format(p=problem)
+    imported = importlib.import_module(import_path)
+    return getattr(imported, "PROBLEM_NAME")
 
 
 def list_implementations(args):
@@ -112,7 +129,7 @@ def list_implementations(args):
         print(infostr)
         for implementation in implementations:
             print("\t{}".format(implementation))
-        print("\n")
+        print("")
 
 
 def list_problem_implementations():
@@ -135,7 +152,8 @@ def list_problem_implementations():
 
         files = next(os.walk(problem_dir))[-1]
         if problem_file in files:
-            implementations.append(problem)
+            summary = get_problem_desc(problem)[:65]
+            implementations.append(summary)
         else:
             warnstr = "WARNING: {p} does not contain {f} - the problem " + \
                       "is not properly implemented. Please re-run the " + \
