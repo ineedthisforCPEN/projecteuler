@@ -226,8 +226,6 @@ def main():
     # Get and format command line arguments
     args, problem_args = argparse_setup()
     argparse_format(args)
-    print(args.versions)
-    return
 
     # Handle any special options that have priority
     if args.list:
