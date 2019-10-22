@@ -136,12 +136,10 @@ def create_problem_from_template(parser, problem):
         problem_name = parser.problem_name.strip()
         problem_desc = parser.problem_desc.strip().replace("\n"," ")
         problem_desc = "\n".join(textwrap.wrap(problem_desc, 72))
-        problem_summary = problem_desc[:65] + "..."
 
         generated_problem = template.format(
                 problem_number=problem_number,
                 problem_name=problem_name,
-                problem_summary=problem_summary,
                 problem_description=problem_desc)
 
     # Create a new file and write the formatted problem template
