@@ -281,12 +281,13 @@ def main():
     # Find the appropriate problem (if it exists) and pass the unhandled
     # command line arguments into the problme class
     problem = get_problem_class(args.problem)(problem_args)
+    print(get_problem_name(const.PROBLEM_NAME.format(args.problem)))
     for version in args.versions:
         if not problem.is_version_implemented(version):
             # Specified version is not implemented. Let the user know, then
             # ignore this version and continue trying to run the remaining
             # versions.
-            warnstr = "Problem {p} Version {v} not implemented - skipping"
+            warnstr = "  Version {v} - not implemented"
             warnstr = warnstr.format(p=const.PROBLEM_NUMBER.format(args.problem),
                                      v=const.VERSION_NUMBER.format(version))
             print(warnstr)
@@ -294,7 +295,7 @@ def main():
 
         # This version of the solution exists. Run it and show the results.
         retval = problem.run_solution(version)
-        infostr = "Problem {p} Version {v} - returned {r}"
+        infostr = "  Version {v} - returned {r}"
         infostr = infostr.format(p=const.PROBLEM_NUMBER.format(args.problem),
                                  v=const.VERSION_NUMBER.format(version),
                                  r=retval)
