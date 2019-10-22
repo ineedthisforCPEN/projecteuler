@@ -94,7 +94,7 @@ def create_version_from_template(problem, version):
     generated_version = ""
     with open(template_file_name, "r") as template_file:
         template = template_file.read()
-        version_name = const.VERSION_NAME.format(version)
+        version_name = const.VERSION_NAME.format(version).capitalize()
 
         generated_version = template.format(
                 version_name=version_name,

@@ -85,21 +85,39 @@ def get_problem_class(problem):
     return getattr(imported, problem_class)
 
 
-def get_problem_desc(problem):
-    """Read the problem file and return its description.
+def get_problem_name(problem):
+    """Read the problem file and return its name.
 
-    This function does handle exceptions - the problem must be
+    This function does NOT handle exceptions - the problem must be
     implemented when you call this function.
 
     Parameters:
-        problem     The problem whose description to return
+        problem     The problem whose name to return
 
     Return:
-        The description of the specified problem.
+        The name of the specified problem.
     """
     import_path = "solutions.{p}.{p}".format(p=problem)
     imported = importlib.import_module(import_path)
     return getattr(imported, "PROBLEM_NAME")
+
+
+def get_version_name(problem, version):
+    """Read the version file and return its name.
+
+    This function does NOT handle exceptions - the version and problem
+    must be implemented when you call this function.
+
+    Parameters:
+        problem     The problem associated with the version
+        version     The version whose name to return
+
+    Return:
+        The name of the specified version.
+    """
+    import_path = "solutions.{p}.{v}".format(p=problem, v=version)
+    imported = importlib.import_module(import_path)
+    return getattr(imported, "VERSION_NAME")
 
 
 def list_implementations(args):
@@ -152,7 +170,7 @@ def list_problem_implementations():
 
         files = next(os.walk(problem_dir))[-1]
         if problem_file in files:
-            summary = get_problem_desc(problem)[:65]
+            summary = get_problem_name(problem)[:65]
             implementations.append(summary)
         else:
             warnstr = "WARNING: {p} does not contain {f} - the problem " + \
@@ -173,9 +191,10 @@ def list_version_implementations(problem):
         Returns a string list of all implemented solution versions.
     """
     implementations = []
+    problem_name = const.PROBLEM_NAME.format(problem)
     problem_dir = os.path.join(PROJECT_DIR,
                                "solutions",
-                               const.PROBLEM_NAME.format(problem))
+                               problem_name)
 
     if not os.path.exists(problem_dir):
         return implementations
@@ -183,7 +202,8 @@ def list_version_implementations(problem):
     versions = next(os.walk(problem_dir))[-1]
     for version in versions:
         if const.RE_VERSION_FILE.match(version) is not None:
-            implementations.append(version)
+            summary = get_version_name(problem_name, version[:-3])[:65]
+            implementations.append(summary)
 
     return implementations
 
