@@ -18,12 +18,12 @@ def solution(args):
         args.number.
     """
     retval = 0
-    fib1 = 0
-    fib2 = 1
+    fib1 = 2
+    fib2 = 3
 
-    while fib2 < args.number:
-        if fib2 % 2 == 0:
-            retval += fib2
+    while fib1 < args.number:
+        if fib1 % 2 == 0:
+            retval += fib1
         fib1, fib2 = fib2, fib1 + fib2
     return retval
 
