@@ -24,7 +24,6 @@ class Problem{problem_number}(classes.Problem):
         self.args = self.parser.parse_args(args)
 
         self.problem_name = PROBLEM_NAME
-        self.problem_summary = PROBLEM_SUMMARY
         self.problem_desc = PROBLEM_DESCRIPTION
         self.problem_versions = self.get_implemented_versions(__file__)
 
