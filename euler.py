@@ -285,8 +285,9 @@ def main():
             # ignore this version and continue trying to run the remaining
             # versions.
             warnstr = "  Version {v} - not implemented"
-            warnstr = warnstr.format(p=const.PROBLEM_NUMBER.format(args.problem),
-                                     v=const.VERSION_NUMBER.format(version))
+            warnstr = \
+                warnstr.format(p=const.PROBLEM_NUMBER.format(args.problem),
+                               v=const.VERSION_NUMBER.format(version))
             print(warnstr)
             continue
 
