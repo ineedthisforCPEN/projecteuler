@@ -223,12 +223,12 @@ def argparse_setup():
     parser.add_argument("--problem", "-p", type=int,
                         help="Which Euler problem to run")
     parser.add_argument("--versions", "-v", type=str,
-                        help="Which versions of the solution to run " + \
+                        help="Which versions of the solution to run " +
                              "(e.g. '1', '1..3', '1..3,5..7')")
 
     # Options
     parser.add_argument("--count", default=1, type=int,
-                        help="The number of times to run the solution - " + \
+                        help="The number of times to run the solution - " +
                              "only applied when the --time flag is set")
     parser.add_argument("--list", action="store_true",
                         help="List all problem or version implementations")
