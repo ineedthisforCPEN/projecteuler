@@ -12,9 +12,6 @@ import utils.arguments as utils_args
 PROJECT_DIR = os.path.abspath(os.path.join(os.path.abspath(__file__), ".."))
 
 
-PROJECT_DIR = os.path.abspath(os.path.join(os.path.abspath(__file__), ".."))
-
-
 ###############################################################################
 # Utilities
 ###############################################################################
