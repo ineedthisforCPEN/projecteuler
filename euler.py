@@ -100,7 +100,7 @@ def argparse_setup():
     # Subparser for problem execution
     run_parser = subparsers.add_parser("run",
                                        help="Execute given implementations")
-    run_parser.add_argument("--problem", "-p", type=int,
+    run_parser.add_argument("--problem", "-p", type=int, required=True,
                             help="Which Euler problem to run")
     run_parser.add_argument("--versions", "-v", type=str,
                             help="Which implementation(s) to run " +
@@ -112,7 +112,7 @@ def argparse_setup():
                                         help="Test problem implementations")
     test_parser.add_argument("--count", "-c", type=int, default=3,
                              help="Number of times to test the solution")
-    test_parser.add_argument("--problem", "-p", type=int,
+    test_parser.add_argument("--problem", "-p", type=int, required=True,
                              help="Which Euler problem to test")
     test_parser.add_argument("--versions", "-v", type=str,
                              help="Which impementation(s) to test " +
@@ -197,7 +197,21 @@ def workload_info(args, problem_args):
 
 
 def workload_run(args, problem_args):
-    print("RUN")
+    problem = get_problem_class(args.problem)(problem_args)
+    print(get_problem_name(const.PROBLEM_NAME.format(args.problem)))
+
+    if args.versions is not None:
+        versions = [const.VERSION_NAME.format(v) for v in args.versions]
+    else:
+        versions = list(problem.problem_versions.keys())
+
+    for version in versions:
+        if not problem.is_version_implemented(version):
+            print(f"  {version} - not implemented")
+            continue
+
+        retval = problem.run_solution(version)
+        print(f"  {version} - returned '{retval}'")
 
 
 def workload_test(args, problem_args):
@@ -219,30 +233,6 @@ def main():
     elif args.which == "test":
         workload_test(args, problem_args)
     return
-
-    # Find the appropriate problem (if it exists) and pass the unhandled
-    # command line arguments into the problme class
-    problem = get_problem_class(args.problem)(problem_args)
-    print(get_problem_name(const.PROBLEM_NAME.format(args.problem)))
-    for version in args.versions:
-        if not problem.is_version_implemented(version):
-            # Specified version is not implemented. Let the user know, then
-            # ignore this version and continue trying to run the remaining
-            # versions.
-            warnstr = "  Version {v} - not implemented"
-            warnstr = \
-                warnstr.format(p=const.PROBLEM_NUMBER.format(args.problem),
-                               v=const.VERSION_NUMBER.format(version))
-            print(warnstr)
-            continue
-
-        # This version of the solution exists. Run it and show the results.
-        retval = problem.run_solution(version)
-        infostr = "  Version {v} - returned {r}"
-        infostr = infostr.format(p=const.PROBLEM_NUMBER.format(args.problem),
-                                 v=const.VERSION_NUMBER.format(version),
-                                 r=retval)
-        print(infostr)
 
 
 if __name__ == "__main__":

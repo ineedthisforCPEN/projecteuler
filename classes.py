@@ -67,8 +67,7 @@ class Problem:
         return versions
 
     def is_version_implemented(self, version):
-        version_name = const.VERSION_NAME.format(version)
-        return version_name in self.problem_versions
+        return version in self.problem_versions
 
     def run_solution(self, version):
         """Run the specified solution for this problem.
@@ -79,5 +78,4 @@ class Problem:
         Return:
             The return value of the implemented solution that is run.
         """
-        version_name = const.VERSION_NAME.format(version)
-        return self.problem_versions[version_name](self.args)
+        return self.problem_versions[version](self.args)
