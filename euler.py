@@ -1,6 +1,5 @@
 import argparse
 import importlib
-import re
 import os
 import os.path
 import sys
@@ -15,49 +14,6 @@ PROJECT_DIR = os.path.abspath(os.path.join(os.path.abspath(__file__), ".."))
 ###############################################################################
 # Utilities
 ###############################################################################
-def convert_range_string_to_list(range_string):
-    """Convert a range string into a list containing all values in the
-    values represented by the range string.
-
-    Parameters:
-        range_string    The range string to convert into a list
-
-    Return:
-        A list of all the values contained in the range string.
-
-    Examples:
-        "1"         -> [1]
-        "1..3"      -> [1,2,3]
-        "1..3,5"    -> [1,2,3,5]
-        "1..3,5..7" -> [1,2,3,5,6,7]
-        "4..6,1..3" -> [1,2,3,4,5,6]
-    """
-    re_valid_range_string = re.compile(r"^(\d+)(\.\.(\d+))?$")
-    numeric_list = []
-
-    range_list = range_string.split(",")
-    for r in range_list:
-        matches = re_valid_range_string.match(r.strip())
-        if matches is None:
-            errmsg = "Malformed range string {} - must be of the form " + \
-                     "x[..y] and can be comma separated"
-            raise ValueError(errmsg.format(range_string))
-
-        start, _, end = matches.groups()
-        if end is None:
-            end = start
-
-        # The ending value of the range_string's range is inclusive unlike
-        # Python's range. Add 1 to end to adjust for this.
-        start = int(start)
-        end = int(end) + 1
-
-        numeric_list += list(range(start, end))
-
-    # Return a sorted list for easier processing
-    return sorted(numeric_list)
-
-
 def get_problem_class(problem):
     """Import and return the specified problem and its implemented
     solutions.
@@ -117,96 +73,8 @@ def get_version_name(problem, version):
     return getattr(imported, "VERSION_NAME")
 
 
-def list_implementations(args):
-    """List all problem implementations or the implementations of a
-    given problem's solution versions.
-
-    Parameters:
-        args    The command line arguments list
-
-    Return:
-        None.
-    """
-    if args.problem is None:
-        implementations = list_problem_implementations()
-        infostr = "Implemented problems:"
-        warnstr = "No problem implementations found"
-    else:
-        implementations = list_version_implementations(args.problem)
-        infostr = "Implemented versions of problem {} solution"
-        infostr = infostr.format(args.problem)
-        warnstr = "No version implementations found for problem {}"
-        warnstr = warnstr.format(args.problem)
-
-    if len(implementations) == 0:
-        print(warnstr + "\n")
-    else:
-        print(infostr)
-        for implementation in implementations:
-            print("\t{}".format(implementation))
-        print("")
-
-
-def list_problem_implementations():
-    """List all implemented problems.
-
-    Parameters:
-        None
-
-    Return:
-        Returns a string list of all implemented problems.
-    """
-    implementations = []
-    solutions_dir = os.path.join(PROJECT_DIR, "solutions")
-    problems = next(os.walk(solutions_dir))[1]
-    problems = [p for p in problems if const.RE_PROBLEM.match(p) is not None]
-
-    for problem in problems:
-        problem_dir = os.path.join(solutions_dir, problem)
-        problem_file = problem + ".py"
-
-        files = next(os.walk(problem_dir))[-1]
-        if problem_file in files:
-            summary = get_problem_name(problem)[:65]
-            implementations.append(summary)
-        else:
-            warnstr = "WARNING: {p} does not contain {f} - the problem " + \
-                      "is not properly implemented. Please re-run the " + \
-                      "generate_problem tool again."
-            print(warnstr.format(p=problem, f=problem_file))
-
-    return implementations
-
-
-def list_version_implementations(problem):
-    """List all implemented versions of the given problem's solution.
-
-    Parameters:
-        problem     The problem whose solution versions to list
-
-    Return:
-        Returns a string list of all implemented solution versions.
-    """
-    implementations = []
-    problem_name = const.PROBLEM_NAME.format(problem)
-    problem_dir = os.path.join(PROJECT_DIR,
-                               "solutions",
-                               problem_name)
-
-    if not os.path.exists(problem_dir):
-        return implementations
-
-    versions = next(os.walk(problem_dir))[-1]
-    for version in versions:
-        if const.RE_VERSION_FILE.match(version) is not None:
-            summary = get_version_name(problem_name, version[:-3])[:65]
-            implementations.append(summary)
-
-    return implementations
-
-
 ###############################################################################
-# Argument Parsing and Main Function
+# Argument Parsing
 ###############################################################################
 def argparse_setup():
     """Initialize the argument parser.
@@ -218,29 +86,44 @@ def argparse_setup():
         None
     """
     parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers()
 
-    # Required arguments
-    parser.add_argument("--problem", "-p", type=int,
-                        help="Which Euler problem to run")
-    parser.add_argument("--versions", "-v", type=str,
-                        help="Which versions of the solution to run " +
-                             "(e.g. '1', '1..3', '1..3,5..7')")
+    # Subparser for implementation listing
+    info_parser = subparsers.add_parser("info",
+                                        help="List implementation details")
+    info_parser.add_argument("--problems", "-p", type=str,
+                             help="Problems to list")
+    info_parser.add_argument("--verbose", "-v", action="store_true",
+                             help="Show details for all implementations")
+    info_parser.set_defaults(which="info")
 
-    # Options
-    parser.add_argument("--count", default=1, type=int,
-                        help="The number of times to run the solution - " +
-                             "only applied when the --time flag is set")
-    parser.add_argument("--list", action="store_true",
-                        help="List all problem or version implementations")
-    parser.add_argument("--time", action="store_true",
-                        help="Times the solution to measure its performance")
+    # Subparser for problem execution
+    run_parser = subparsers.add_parser("run",
+                                       help="Execute given implementations")
+    run_parser.add_argument("--problem", "-p", type=int,
+                            help="Which Euler problem to run")
+    run_parser.add_argument("--versions", "-v", type=str,
+                            help="Which implementation(s) to run " +
+                                 "(e.g. '1', '1..3', '1..3,5..7'")
+    run_parser.set_defaults(which="run")
+
+    # Subparser for testing
+    test_parser = subparsers.add_parser("test",
+                                        help="Test problem implementations")
+    test_parser.add_argument("--count", "-c", type=int, default=3,
+                             help="Number of times to test the solution")
+    test_parser.add_argument("--problem", "-p", type=int,
+                             help="Which Euler problem to test")
+    test_parser.add_argument("--versions", "-v", type=str,
+                             help="Which impementation(s) to test " +
+                                  "(e.g. '1', '1..3', '1..3,5..7'")
+    test_parser.set_defaults(which="test")
 
     args, unknown = parser.parse_known_args()
-
-    # Process any arguments as required
-    if not args.time:
-        # Count argument only applicable when timing each solution's run
-        args.count = 1
+    if (len(vars(args))) == 0:
+        # No arguments passed. Print help string and exit.
+        parser.print_help()
+        sys.exit(1)
 
     return (args, unknown)
 
@@ -255,9 +138,70 @@ def argparse_format(args):
     Return:
         None. The args parameter is modified in place.
     """
-    if args.versions is not None:
+    argvars = vars(args)
+
+    if "count" in argvars:
+        args.count = max(0, args.count)
+    if "problems" in argvars and argvars["problems"] is not None:
+        args.problems = utils_args.extended_range_string_to_list(args.problems)
+    if "versions" in argvars and argvars["versions"] is not None:
         args.versions = utils_args.extended_range_string_to_list(args.versions)
+
     return args
+
+
+###############################################################################
+# Main Function and Workload Delegation
+###############################################################################
+def workload_info(args, problem_args):
+    print("\n[Project Euler Solution Implementations]\n")
+    solutions_dir = os.path.join(PROJECT_DIR, "solutions")
+    implemented = next(os.walk(solutions_dir))[1]
+    missing_problems = False
+
+    if args.problems is not None:
+        problems = [const.PROBLEM_NAME.format(p) for p in args.problems]
+    else:
+        problems = implemented
+
+    for problem in problems:
+        if problem not in implemented:
+            print(f"Problem {problem[-const.PROBLEM_DIGITS:]}" +
+                  " - NOT IMPLEMENTED")
+            continue
+
+        problem_dir = os.path.join(solutions_dir, problem)
+        problem_file = problem + ".py"
+        files = next(os.walk(problem_dir))[-1]
+
+        # Print problem information.
+        if problem_file in files:
+            print(get_problem_name(problem)[:65])
+        else:
+            print(f"Problem {problem[-const.PROBLEM_DIGITS:]}" +
+                  " - NO PROBLEM FILE FOUND")
+            missing_problems = True
+
+        # If verbose, print version implementations.
+        if args.verbose:
+            for version in files:
+                if const.RE_VERSION_FILE.match(version) is not None:
+                    version_name = os.path.splitext(version)[0]
+                    infostr = f"    {get_version_name(problem, version_name)}"
+                    print(infostr[:65])
+
+    if missing_problems:
+        print("\nWARNING: Some problems are not implemented properly. " +
+              "Please re-run the generate_problem tool again.")
+    print("\n")
+
+
+def workload_run(args, problem_args):
+    print("RUN")
+
+
+def workload_test(args, problem_args):
+    print("TEST")
 
 
 def main():
@@ -265,15 +209,16 @@ def main():
     args, problem_args = argparse_setup()
     argparse_format(args)
 
-    # Handle any special options that have priority
-    if args.list:
-        list_implementations(args)
-        return
-
-    # If any of the above options were not specified, then the "problem"
-    # argument is mandatory. Perform the check here.
-    if args.problem is None:
-        raise TypeError("Missing required argument: 'problem'")
+    # Determine what action to take depending on which subparser was chosen.
+    # Each subparser has different command line arguments, so it must be
+    # handled separately.
+    if args.which == "info":
+        workload_info(args, problem_args)
+    elif args.which == "run":
+        workload_run(args, problem_args)
+    elif args.which == "test":
+        workload_test(args, problem_args)
+    return
 
     # Find the appropriate problem (if it exists) and pass the unhandled
     # command line arguments into the problme class
