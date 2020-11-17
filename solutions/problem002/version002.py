@@ -1,7 +1,7 @@
 # Version-specific constants - EDIT THESE VALUES
 VERSION_NAME = "Version002 - Brute Force, but Skip Some"
-VERSION_DESCRIPTION = \
-"""Calculate each Fibonacci number and sum only the even ones. Skip the
+VERSION_DESCRIPTION = """
+Calculate each Fibonacci number and sum only the even ones. Skip the
 even check to reduce branching.
 
 We can skip the even check because we know every third Fibonacci number

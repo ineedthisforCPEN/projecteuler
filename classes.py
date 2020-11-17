@@ -48,7 +48,8 @@ class Problem:
         problem_dir = os.path.abspath(os.path.dirname(context))
         problem_name = os.path.split(problem_dir)[-1]
         files = next(os.walk(problem_dir))[-1]
-        files = [f for f in files if const.RE_VERSION_FILE.match(f) is not None]
+        files = \
+            [f for f in files if const.RE_VERSION_FILE.match(f) is not None]
 
         versions = {}
         for version in files:

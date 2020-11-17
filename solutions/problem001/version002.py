@@ -1,7 +1,7 @@
 # Version-specific constants - EDIT THESE VALUES
 VERSION_NAME = "Version002 - Brute Force, Smarter Iteration"
-VERSION_DESCRIPTION = \
-"""Brute force, iterate through all integers that are divisible by 3
+VERSION_DESCRIPTION = """
+Brute force, iterate through all integers that are divisible by 3
 or 5, skipping those that are not.
 """
 

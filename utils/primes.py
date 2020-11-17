@@ -9,7 +9,9 @@ import os.path
 
 
 CACHED_PRIMES = {}
-PROJECT_DIR = os.path.abspath(os.path.join(os.path.abspath(__file__), "..", ".."))
+PROJECT_DIR = os.path.abspath(os.path.join(os.path.abspath(__file__),
+                                           "..",
+                                           ".."))
 PRIME_FILE = os.path.join(PROJECT_DIR, "resources", "primes.txt")
 
 

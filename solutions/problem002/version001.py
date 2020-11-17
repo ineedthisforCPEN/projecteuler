@@ -1,7 +1,7 @@
 # Version-specific constants - EDIT THESE VALUES
 VERSION_NAME = "Version001 - Brute Force"
-VERSION_DESCRIPTION = \
-"""Calculate each Fibonacci number and sum only the even ones.
+VERSION_DESCRIPTION = """
+Calculate each Fibonacci number and sum only the even ones.
 """
 
 

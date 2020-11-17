@@ -7,7 +7,9 @@ import textwrap
 import urllib.request
 
 
-PROJECT_DIR = os.path.abspath(os.path.join(os.path.abspath(__file__), "..", ".."))
+PROJECT_DIR = os.path.abspath(os.path.join(os.path.abspath(__file__),
+                                           "..",
+                                           ".."))
 
 
 class ProblemParser(html.parser.HTMLParser):
@@ -134,7 +136,7 @@ def create_problem_from_template(parser, problem):
 
         problem_number = const.PROBLEM_NUMBER.format(problem)
         problem_name = parser.problem_name.strip()
-        problem_desc = parser.problem_desc.strip().replace("\n"," ")
+        problem_desc = parser.problem_desc.strip().replace("\n", " ")
         problem_desc = "\n".join(textwrap.wrap(problem_desc, 72))
 
         generated_problem = template.format(

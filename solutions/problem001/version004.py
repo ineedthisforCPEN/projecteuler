@@ -1,10 +1,7 @@
-import math
-
-
 # Version-specific constants - EDIT THESE VALUES
 VERSION_NAME = "Formulaic Approach"
-VERSION_DESCRIPTION = \
-"""A formulaic approach - worst-case constant time.
+VERSION_DESCRIPTION = """
+A formulaic approach - worst-case constant time.
 
 This works once we notice that the all numbers that are divisible by
 3 and those that are divisible by 5 only overlap when the numbers are
@@ -61,9 +58,12 @@ def solution(args):
         by 3 or 5.
     """
     n = args.number - 1
-    sum_div_by_3  = arithmetic_series_sum(0, n - (n %  3),  3)
-    sum_div_by_5  = arithmetic_series_sum(0, n - (n %  5),  5)
-    sum_div_by_15 = arithmetic_series_sum(0, n - (n % 15), 15) if n >= 15 else 0
+    sum_div_by_3 = arithmetic_series_sum(0, n - (n % 3), 3)
+    sum_div_by_5 = arithmetic_series_sum(0, n - (n % 5), 5)
+    if n >= 15:
+        sum_div_by_15 = arithmetic_series_sum(0, n - (n % 15), 15)
+    else:
+        sum_div_by_15 = 0
     return sum_div_by_3 + sum_div_by_5 - sum_div_by_15
 
 

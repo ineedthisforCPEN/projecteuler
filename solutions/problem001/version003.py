@@ -1,7 +1,7 @@
 # Version-specific constants - EDIT THESE VALUES
 VERSION_NAME = "Version003 - Brute Force, Even Smarter Iteration"
-VERSION_DESCRIPTION = \
-"""A slightly more formulaic approach, but still iterative.
+VERSION_DESCRIPTION = """
+A slightly more formulaic approach, but still iterative.
 """
 
 
@@ -35,7 +35,6 @@ def solution(args):
             retval += 15*i + n
         n -= 1
     return retval
-
 
 
 if __name__ == "__main__":

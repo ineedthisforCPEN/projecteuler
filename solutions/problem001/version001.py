@@ -1,7 +1,7 @@
 # Version-specific constants - EDIT THESE VALUES
 VERSION_NAME = "Version001 - Brute Force, Iterative"
-VERSION_DESCRIPTION = \
-"""Brute force, iterate through all integers
+VERSION_DESCRIPTION = """
+Brute force, iterate through all integers
 """
 
 

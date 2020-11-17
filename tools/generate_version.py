@@ -1,12 +1,12 @@
 import argparse
 import os
 import os.path
-import re
 import sys
-import textwrap
 
 
-PROJECT_DIR = os.path.abspath(os.path.join(os.path.abspath(__file__), "..", ".."))
+PROJECT_DIR = os.path.abspath(os.path.join(os.path.abspath(__file__),
+                                           "..",
+                                           ".."))
 
 
 def argument_parser():
