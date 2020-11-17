@@ -9,7 +9,7 @@ the performance of some (or all) of the solutions.
 
 ## Usage
 
-Usage information can found from the command line
+General usage information can found from the command line.
 
 `python euler.py [case] -h`
 
@@ -17,8 +17,7 @@ There are three different use cases.
 
 ### Listing Solution Implementations
 
-List all problems where a solution has been implemented.
-
+List all problems where a solution has been implemented.\
 `python euler.py info [--problems PROBLEMS] [--verbose]`
 
 The optional `--problems` parameter allows users to specify a range of problems
@@ -31,8 +30,7 @@ will be listed as well.
 
 ### Running a Solution
 
-Execute a solution to a given problem.
-
+Execute a solution to a given problem.\
 `python euler.py run --problem PROBLEM [--versions VERSIONS] PARAMETERS`
 
 The `--problems` parameter specifies which Euler Project problem to solve.
@@ -51,8 +49,7 @@ required for the solution, enter the following command
 ### Profiling a Solution Implementation
 
 Profile a solution to a given problem to determine its performance and resource
-usage.
-
+usage.\
 `python euler.py test [--count COUNT] --problem PROBLEM [--versions VERSIONS] PARAMETERS`
 
 The only difference between this and solution execution is the `--count`
@@ -61,31 +58,31 @@ executed during profiling. The default number of iterations is 3.
 
 ### Examples
 
-List all implemented solutions
+List all implemented solutions\
 `python euler.py info`
 
-List all implemented solutions and all the implemented solution versions
+List all implemented solutions and all the implemented solution versions\
 `python euler.py info --verbose`
 
-List solutions 1 through 10 and check if they are implemented
+List solutions 1 through 10 and check if they are implemented\
 `python euler.py info --problems 1..10`
 
 Run version 1 of the solution for
-[Problem 1](https://projecteuler.net/problem=1)
+[Problem 1](https://projecteuler.net/problem=1)\
 `python euler.py run --problem 1 --versions 1 -n 1000`
 
-Run all solutions for [Problem 1](https://projecteuler.net/problem=1)
+Run all solutions for [Problem 1](https://projecteuler.net/problem=1)\
 `python euler.py run --problem 1 -n 1000`
 
 Profile versions 1 and 2 of the solution for
-[Problem 1](https://projecteuler.net/problem=1)
+[Problem 1](https://projecteuler.net/problem=1)\
 `python euler.py test --problem 1 --versions 1,2 -n 1000`
 
-Profile all solutions for [Problem 1](https://projecteuler.net/problem=1)
+Profile all solutions for [Problem 1](https://projecteuler.net/problem=1)\
 `python euler.py test --problem 1 -n 1000`
 
 Profile all solutions for [Problem 1](https://projecteuler.net/problem=1)
-running each solution 5 times.
+running each solution 5 times\
 `python euler.py test --count 5 --problem 1 -n 1000`
 
 ## Adding Problem Files
