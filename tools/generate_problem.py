@@ -2,6 +2,7 @@ import argparse
 import html.parser
 import os
 import os.path
+import ssl
 import sys
 import textwrap
 import urllib.request
@@ -191,6 +192,9 @@ def main():
 
 
 if __name__ == "__main__":
+    # Use unverifiable SSL to prevent CERTIFICATE_VERIFY_FAILED errors
+    ssl._create_default_https_context = ssl._create_unverified_context
+
     # Add projecteuler to system path to make use of constants and templates
     import_dir = os.path.abspath(os.path.join(PROJECT_DIR, ".."))
     if import_dir not in sys.path:
