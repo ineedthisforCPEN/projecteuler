@@ -1,3 +1,6 @@
+import utils.algebra as algebra
+
+
 # Version-specific constants - EDIT THESE VALUES
 VERSION_NAME = "Formulaic Approach"
 VERSION_DESCRIPTION = """
@@ -58,10 +61,10 @@ def solution(args):
         by 3 or 5.
     """
     n = args.number - 1
-    sum_div_by_3 = arithmetic_series_sum(0, n - (n % 3), 3)
-    sum_div_by_5 = arithmetic_series_sum(0, n - (n % 5), 5)
+    sum_div_by_3 = algebra.arithmetic_sum(0, n - (n % 3), 3)
+    sum_div_by_5 = algebra.arithmetic_sum(0, n - (n % 5), 5)
     if n >= 15:
-        sum_div_by_15 = arithmetic_series_sum(0, n - (n % 15), 15)
+        sum_div_by_15 = algebra.arithmetic_sum(0, n - (n % 15), 15)
     else:
         sum_div_by_15 = 0
     return sum_div_by_3 + sum_div_by_5 - sum_div_by_15
