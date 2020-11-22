@@ -1,3 +1,7 @@
+from utils.misc import get_integer_palindrome_function
+from utils.misc import PalindromeAlgorithm
+
+
 # Version-specific constants - EDIT THESE VALUES
 VERSION_NAME = "Version001 - Bruteforce bottom-up (stringpal)"
 VERSION_DESCRIPTION = """
@@ -8,8 +12,8 @@ The palindrome check is done via string conversion.
 """
 
 
-def _ispalindrome(number):
-    return str(number) == str(number)[::-1]
+_is_palindrome = \
+    get_integer_palindrome_function(PalindromeAlgorithm.STRCOMPARE)
 
 
 def solution(args):
@@ -37,7 +41,7 @@ def solution(args):
     for factor1 in range(minfactor, maxfactor):
         for factor2 in range(factor1, maxfactor):
             num = factor1 * factor2
-            if _ispalindrome(num) and num > maxnum:
+            if _is_palindrome(num) and num > maxnum:
                 maxnum = num
                 pair = [factor1, factor2]
 
