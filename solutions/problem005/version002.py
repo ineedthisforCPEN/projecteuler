@@ -12,7 +12,7 @@ range using prime factors of each of the numbers in the given range.
 
 
 def _get_prime_factors(n):
-    prime_generator = primes.get_prime_generator()()
+    prime_generator = primes.get_prime_generator()
     prime = next(prime_generator)
     max_divisor = math.ceil(math.sqrt(n))
 

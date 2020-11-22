@@ -47,13 +47,13 @@ class PrimeGenerator(enum.Enum):
 
 def get_prime_generator(algorithm=PrimeGenerator.BRUTEFORCE):
     if algorithm == PrimeGenerator.BRUTEFORCE:
-        return _prime_generator_bruteforce
+        return _prime_generator_bruteforce()
     else:
         # This else statement is redundant but leave it up. If there are any
         # new algorithms, we can easily just modify the line below to choose
         # the default algorithm without needing to change the structure of the
         # whole if-else logic.
-        return _prime_generator_bruteforce
+        return _prime_generator_bruteforce()
 
 
 def _prime_generator_cached():
