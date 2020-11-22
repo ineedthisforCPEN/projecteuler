@@ -34,20 +34,6 @@ we get the correct answer.
 """
 
 
-def arithmetic_series_sum(a_1, a_n, d):
-    """Calculate the sum of an arithmetic series.
-
-    Parameters:
-        a_n     The last element of the series
-        d       The difference between elements
-
-    Return:
-        The sum of the arithmetic series.
-    """
-    n = ((a_n - a_1)//d + 1)
-    return n*(a_1 + a_n)//2
-
-
 def solution(args):
     """Problem 1 - Version 4
     Use a formula to determine the the sum.
