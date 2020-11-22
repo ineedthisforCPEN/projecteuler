@@ -22,7 +22,7 @@ def solution(args):
     """
     largest_prime_factor = 1
     number = args.number
-    prime_generator = primes.prime_generator()
+    prime_generator = primes.get_prime_generator()()
 
     while number > 1:
         prime = next(prime_generator)

@@ -4,6 +4,7 @@ Utilities used for calculating and validating prime numbers.
 """
 
 
+import enum
 import math
 import os.path
 
@@ -30,50 +31,54 @@ with open(PRIME_FILE, "r") as prime_file:
 
 
 ###############################################################################
+# Utilities
+###############################################################################
+def _max_prime():
+    max_index = max(CACHED_PRIMES)
+    return CACHED_PRIMES[max_index][-1]
+
+
+###############################################################################
 # Prime Generation
 ###############################################################################
-def prime_generator():
-    """A generator that produces prime number. Makes use of caching for
-    some performance benefits when calculating the first few primes.
+class PrimeGenerator(enum.Enum):
+    BRUTEFORCE = 1
 
-    Yields:
-        Yields the next prime number.
-    """
+
+def get_prime_generator(algorithm=PrimeGenerator.BRUTEFORCE):
+    if algorithm == PrimeGenerator.BRUTEFORCE:
+        return _prime_generator_bruteforce
+    else:
+        # This else statement is redundant but leave it up. If there are any
+        # new algorithms, we can easily just modify the line below to choose
+        # the default algorithm without needing to change the structure of the
+        # whole if-else logic.
+        return _prime_generator_bruteforce
+
+
+def _prime_generator_cached():
+    """Pulled all cached primes. Always yields 2 first."""
     yield 2
-
-    # First, yield all of the cached primes
-    prime = 3
-    for index in sorted(CACHED_PRIMES.keys()):
-        for p in CACHED_PRIMES[index]:
-            prime = p
+    for index in sorted(CACHED_PRIMES):
+        for prime in CACHED_PRIMES[index]:
             yield prime
 
-    # Once the cache is exhausted, start calculating the remaining primes
-    generator = _prime_generator_bruteforce(prime + 2)
-    while True:
-        yield(next(generator))
 
+def _prime_generator_bruteforce():
+    """Bruteforce method for generating primes."""
+    is_prime = get_prime_verifier()
 
-def _prime_generator_bruteforce(prime):
-    """A generator that produces prime numbers using a bruteforce
-    method.
+    generator = _prime_generator_cached()
+    for prime in generator:
+        yield prime
 
-    Assumption: prime > 2
-
-    Parameters:
-        prime   The number from which to start calculating primes
-
-    Yields:
-        Yields the next prime number.
-    """
-    # Even numbers are not primes (assuming we start from prime > 2)
-    if prime % 2 == 0:
-        prime += 1
-
+    prime += 2
     while True:
         while not is_prime(prime):
             prime += 2
 
+        # If it's a prime, cache it! This will make some of the prime
+        # verification functions run quicker.
         index = prime // CACHE_INDEX_GRANULATIRY
         if index not in CACHED_PRIMES:
             CACHED_PRIMES[index] = []
@@ -84,51 +89,43 @@ def _prime_generator_bruteforce(prime):
 ###############################################################################
 # Prime Validation
 ###############################################################################
-def is_prime(prime):
-    """Checks if the input number is a prime number.
-
-    Parameters:
-        prime   The number whose primality to check
-
-    Returns:
-        True if "prime" is a prime number, False otherwise.
-    """
-    # Check the cache first
-    index = prime // CACHE_INDEX_GRANULATIRY
-    if index in CACHED_PRIMES:
-        return prime in CACHED_PRIMES[index]
-
-    if _is_prime_smarter_bruteforce(prime):
-        if index not in CACHED_PRIMES:
-            CACHED_PRIMES[index] = []
-        CACHED_PRIMES[index].append(prime)
-        return True
-    return False
+class PrimeVerifier(enum.Enum):
+    BRUTEFORCE = 1
 
 
-def _is_prime_smarter_bruteforce(prime):
-    """Check if a number is prime using a modified bruteforce method.
-    Every number n has two divisors a and b such that:
-        a * b = n
-        a <= b
+def get_prime_verifier(algorithm=PrimeVerifier.BRUTEFORCE):
+    if algorithm == PrimeVerifier.BRUTEFORCE:
+        return _is_prime_bruteforce
+    else:
+        # This else statement is redundant but leave it up. If there are any
+        # new algorithms, we can easily just modify the line below to choose
+        # the default algorithm without needing to change the structure of the
+        # whole if-else logic.
+        return _is_prime_bruteforce
 
-    In the case where a == b, we know that:
-        a = b = sqrt(n)
 
-    We know that every number is made up of prime factors. So in order
-    to determine if a number is prime, we can check all know prime
-    numbers below sqrt(n) and if any can divide our supposed prime, we
-    know that it is not, in fact, a prime. Because we will know more
-    prime numbers smaller that sqrt(n) than prime numbers larger than
-    sqrt(n), we conduct our search for a divisor in the range
-    [3,sqrt(n)].
+def _is_prime_bruteforce(prime):
+    """Check if a number is prime using brute force and some caching.
+    Our brute force method is a little smarter than the standard method,
+    as we rule some factors out due to the following principles:
 
-    If our first divisor, the odd number closest to sqrt(n), is not in
-    our list of know primes, then we must use our bruteforce method to
-    determine if there are any divisors for the supposed prime between
-    the first divisor and the largest know prime. We can do this by
-    iterating over all odd numbers between these two values, and
-    checking if they are divisors of the supposed prime.
+    1) We already have a list of cached primes. If our supposed prime is
+    cached, we know it's a prime. If it is not cached, but is smaller
+    than our largest cached prime, we know that it is not a prime number
+    because we assume the cache contains all prime numbers from 2 to the
+    largest number stored in the cache.
+
+    2) We do not need to check for factors that are even. We can easily
+    eliminate even numbers in the beginning, so checking even factors
+    later is redundant.
+
+    3) Every number n has two divisors a and b such that a*b = n and
+    a <= b. In the case a == b, we see that a = b = sqrt(n). With this,
+    we know there are two sets of factors: those in [1, sqrt(n)) and
+    those in (sqrt(n), n]. Because the range of all numbers in
+    [1, sqrt(n)] is much smaller than the range of numbers in
+    (sqrt(n), n], we will limit our factor search in [1, sqrt(n)), and
+    then finally test sqrt(n).
 
     Assumption: prime > 2
 
@@ -138,48 +135,32 @@ def _is_prime_smarter_bruteforce(prime):
     Returns:
         True if "prime" is a prime number, False otherwise.
     """
-    # Easiest check to make
+    # Easiest prime to check
     if prime % 2 == 0:
         return False
 
-    # Calculate our starting # point: the odd number closes to the square root
-    # of our supposed prime.
-    divisor = math.ceil(math.sqrt(prime)) - (1 - prime % 2)
+    # Check if the prime is cached:
+    index = prime // CACHE_INDEX_GRANULATIRY
+    if index in CACHED_PRIMES:
+        if prime in CACHED_PRIMES[index]:
+            return True
 
-    # Run the bruteforce method if our divisor is not a cached prime.
-    while divisor // CACHE_INDEX_GRANULATIRY not in CACHED_PRIMES and divisor > 1:
-        if prime % divisor == 0:
+    # If the number is not cached, it could still be a prime if it is
+    # larger than the largest prime we currently have cached.
+    largest_prime = _max_prime()
+    if prime < largest_prime:
+        return False
+
+    # We've checked the cache with no conclusive results. Now it's time
+    # to brute force our prime verification:
+    factor = largest_prime + 2
+    while factor < math.ciel(math.sqrt(prime)):
+        if prime % factor == 0:
             return False
-        divisor -= 2
-
-    # Now our divisor is approaching the cached primes. However, it might not
-    # be a cached prime. Check all possible divisors until we reach our first
-    # cached prime.
-    #
-    # NOTE: If there are no cached primes, largest_prime will be 1. This allows
-    # us to run the full bruteforce method if there are no cached primes.
-    index = divisor // CACHE_INDEX_GRANULATIRY
-    largest_prime = CACHED_PRIMES.get(index, [1])[-1]
-
-    while divisor > largest_prime:
-        if prime % divisor == 0:
-            return False
-        divisor -= 2
-
-    # Now our divisor is (or could be) a known prime. Go through each known
-    # prime to determine if any of them are divisors of the supposed prime.
-    index = divisor // CACHE_INDEX_GRANULATIRY
-    while index >= 0:
-        primes = CACHED_PRIMES.get(index, [])
-        for divisor in reversed(primes):
-            if prime % divisor == 0:
-                return False
-        index -= 1
-
-    # It *is* a prime!
+        factor += 2
     return True
 
 
 if __name__ == "__main__":
-    maxprime = max(CACHED_PRIMES[max(CACHED_PRIMES.keys())])
+    maxprime = max(CACHED_PRIMES[max(CACHED_PRIMES)])
     print(maxprime)
