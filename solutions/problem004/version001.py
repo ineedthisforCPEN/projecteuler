@@ -16,7 +16,7 @@ _is_palindrome = \
     get_integer_palindrome_function(PalindromeAlgorithm.STRCOMPARE)
 
 
-def solution(args):
+def solution(resources, args):
     """Problem 4 - Version 1
     Try all possible combinations of n-digit numbers to find the
     combination that will create the largest palindrome.

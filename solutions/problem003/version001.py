@@ -9,7 +9,7 @@ number utilities.
 """
 
 
-def solution(args):
+def solution(resources, args):
     """Problem 3 - Version 1
     Find the largest prime factor with the use of this project's prime
     number utilities.

@@ -8,7 +8,7 @@ Find the nth prime number using this project's prime number utilities.
 """
 
 
-def solution(args):
+def solution(resources, args):
     """Problem 7 - Version 1
 
     Find the nth prime number using this project's prime number

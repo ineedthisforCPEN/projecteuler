@@ -34,7 +34,7 @@ def _thread(range_min, range_max):
     return (range_min, 0, 0)
 
 
-def solution(args):
+def solution(resources, args):
     """Problem 4 - Version 3
     A parallelized bottom-up greedy algorithm.
 

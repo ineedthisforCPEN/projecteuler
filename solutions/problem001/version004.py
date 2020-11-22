@@ -34,7 +34,7 @@ we get the correct answer.
 """
 
 
-def solution(args):
+def solution(resources, args):
     """Problem 1 - Version 4
     Use a formula to determine the the sum.
 

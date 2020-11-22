@@ -10,7 +10,7 @@ is less than our limit, add it to the sum.
 """
 
 
-def solution(args):
+def solution(resources, args):
     """Problem 2 - Version 2
     Calculate each Fibonacci number and sum only the even ones. Skip
     the even check to reduce branching.

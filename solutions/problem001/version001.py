@@ -5,7 +5,7 @@ Brute force, iterate through all integers
 """
 
 
-def solution(args):
+def solution(resources, args):
     """Problem 1 - Version 1
     Iterate through every intger from 1 through n to calculate the sum
     of numbers divisible by 3 and 5.

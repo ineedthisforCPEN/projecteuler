@@ -5,7 +5,7 @@ LONGER VERSION DESCRIPTION
 """
 
 
-def solution(args):
+def solution(resources, args):
     """Problem {problem_number} - Version {version_number}
 
     Parameters:

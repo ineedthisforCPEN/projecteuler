@@ -5,7 +5,7 @@ Manually calculate the sum of squares and the square of the sum.
 """
 
 
-def solution(args):
+def solution(resources, args):
     """Problem 6 - Version 1
 
     Manually calculate the sum of squares and the square of the sum.

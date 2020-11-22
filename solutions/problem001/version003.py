@@ -5,7 +5,7 @@ A slightly more formulaic approach, but still iterative.
 """
 
 
-def solution(args):
+def solution(resources, args):
     """Problem 1 - Version 3
     Use a formula to determine the additional sum 15 integers at a
     time, then use the iterative approach for any remaining integers

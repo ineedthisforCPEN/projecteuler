@@ -28,7 +28,7 @@ def _get_prime_factors(n):
     return collections.Counter(prime_factors)
 
 
-def solution(args):
+def solution(resources, args):
     """Problem 5 - Version 2
 
     Determine the smallest number divisible by all the numbers in the

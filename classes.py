@@ -2,7 +2,7 @@ import importlib
 import os
 import os.path
 
-from projecteuler import constants as const
+import constants as const
 
 
 class Problem:
@@ -16,6 +16,7 @@ class Problem:
     def __init__(self, args):
         self.parser = None
         self.args = None
+        self.resources = None
 
         self.problem_name = ""
         self.problem_summary = ""
@@ -79,4 +80,4 @@ class Problem:
         Return:
             The return value of the implemented solution that is run.
         """
-        return self.problem_versions[version](self.args)
+        return self.problem_versions[version](self.resources, self.args)

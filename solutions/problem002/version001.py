@@ -5,7 +5,7 @@ Calculate each Fibonacci number and sum only the even ones.
 """
 
 
-def solution(args):
+def solution(resources, args):
     """Problem 2 - Version 1
     Calculate each Fibonacci number and sum only the even ones.
 

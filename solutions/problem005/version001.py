@@ -5,7 +5,7 @@ Bottom-up brute force approach.
 """
 
 
-def solution(args):
+def solution(resources, args):
     """Problem 5 - Version 1
 
     Bottom-up brute force approach.

@@ -32,7 +32,7 @@ number of calculations required.
 """
 
 
-def solution(args):
+def solution(resources, args):
     """Problem 2 - Version 3
     Calculate each Fibonacci number using matrix math and sum only the
     even ones. Skip the even check to reduce branching.

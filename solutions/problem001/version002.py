@@ -6,7 +6,7 @@ or 5, skipping those that are not.
 """
 
 
-def solution(args):
+def solution(resources, args):
     """Problem 1 - Version 2
     Iterate through every integer that is divisible by 3 and 5,
     skipping those that are not, and sum those values.

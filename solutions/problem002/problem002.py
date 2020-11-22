@@ -1,6 +1,7 @@
 import argparse
 
 from projecteuler import classes
+from utils.resources import load_problem_resources
 
 
 # Problem-specific constants
@@ -26,6 +27,7 @@ class Problem002(classes.Problem):
     def __init__(self, args):
         self.parser = self.create_parser()
         self.args = self.parser.parse_args(args)
+        self.resources = load_problem_resources(int("002"))
 
         self.problem_name = PROBLEM_NAME
         self.problem_desc = PROBLEM_DESCRIPTION

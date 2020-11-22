@@ -15,6 +15,7 @@ VERSION_NAME = "version" + VERSION_NUMBER
 
 PROBLEM_FILE = PROBLEM_NAME + ".py"
 VERSION_FILE = VERSION_NAME + ".py"
+RESOURCE_FILE = PROBLEM_NAME + ".txt"
 
 
 # Regular expressions constants
