@@ -1,8 +1,11 @@
 import argparse
+import bisect
 import importlib
 import os
 import os.path
+import statistics
 import sys
+import time
 
 import constants as const
 import utils.arguments as utils_args
@@ -14,6 +17,21 @@ PROJECT_DIR = os.path.abspath(os.path.join(os.path.abspath(__file__), ".."))
 ###############################################################################
 # Utilities
 ###############################################################################
+def format_timing(timing):
+    """Format a timing to  have the format 'X XXX XXX XXX.YYYYYY'.
+
+    Parameters:
+        timing  The timing (in seconds) to format
+
+    Return:
+        The formatted timing.
+    """
+    rounded = round(timing, 6)
+    formatted = "{:,.6F}".format(rounded)
+    formatted = formatted.replace(",", " ")
+    return "{:>20}".format(formatted)
+
+
 def get_problem_class(problem):
     """Import and return the specified problem and its implemented
     solutions.
@@ -141,7 +159,7 @@ def argparse_format(args):
     argvars = vars(args)
 
     if "count" in argvars:
-        args.count = max(0, args.count)
+        args.count = max(1, args.count)
     if "problems" in argvars and argvars["problems"] is not None:
         args.problems = utils_args.extended_range_string_to_list(args.problems)
     if "versions" in argvars and argvars["versions"] is not None:
@@ -215,7 +233,41 @@ def workload_run(args, problem_args):
 
 
 def workload_test(args, problem_args):
-    print("TEST")
+    problem = get_problem_class(args.problem)(problem_args)
+    print(get_problem_name(const.PROBLEM_NAME.format(args.problem)))
+
+    if args.versions is not None:
+        versions = [const.VERSION_NAME.format(v) for v in args.versions]
+    else:
+        versions = list(problem.problem_versions.keys())
+
+    for version in versions:
+        if not problem.is_version_implemented(version):
+            print(f"  {version} - not implemented")
+            continue
+
+        problem_name = const.PROBLEM_NAME.format(args.problem)
+        print(f"  {get_version_name(problem_name, version)}")
+        # print(f"  {version} - running {args.count} iterations")
+
+        timings = []
+        for iteration in range(args.count):
+            start_time = time.time()
+            problem.run_solution(version)
+            bisect.insort(timings, time.time() - start_time)
+
+        minimum = timings[0]
+        average = statistics.mean(timings)
+        maximum = timings[-1]
+        median = statistics.median(timings)
+        stdev = statistics.stdev(timings)
+
+        print(f"    total runtime   {format_timing(sum(timings))}  seconds")
+        print(f"    min.  runtime   {format_timing(minimum)}  seconds")
+        print(f"    avg.  runtime   {format_timing(average)}  seconds")
+        print(f"    max.  runtime   {format_timing(maximum)}  seconds")
+        print(f"    med.  runtime   {format_timing(median)}  seconds")
+        print(f"    standard deviation                      {stdev:.3f}")
 
 
 def main():
