@@ -126,16 +126,17 @@ def argparse_setup():
     run_parser.set_defaults(which="run")
 
     # Subparser for testing
-    test_parser = subparsers.add_parser("test",
-                                        help="Test problem implementations")
+    test_parser = subparsers.add_parser("perf",
+                                        help="Check problem implementation " +
+                                             "performance")
     test_parser.add_argument("--count", "-c", type=int, default=3,
-                             help="Number of times to test the solution")
+                             help="Number of times to run the solution")
     test_parser.add_argument("--problem", "-p", type=int, required=True,
-                             help="Which Euler problem to test")
+                             help="Which Euler problem to run")
     test_parser.add_argument("--versions", "-v", type=str,
-                             help="Which impementation(s) to test " +
+                             help="Which impementation(s) to run " +
                                   "(e.g. '1', '1..3', '1..3,5..7'")
-    test_parser.set_defaults(which="test")
+    test_parser.set_defaults(which="perf")
 
     args, unknown = parser.parse_known_args()
     if (len(vars(args))) == 0:
@@ -214,25 +215,7 @@ def workload_info(args, problem_args):
     print("\n")
 
 
-def workload_run(args, problem_args):
-    problem = get_problem_class(args.problem)(problem_args)
-    print(get_problem_name(const.PROBLEM_NAME.format(args.problem)))
-
-    if args.versions is not None:
-        versions = [const.VERSION_NAME.format(v) for v in args.versions]
-    else:
-        versions = list(problem.problem_versions.keys())
-
-    for version in versions:
-        if not problem.is_version_implemented(version):
-            print(f"  {version} - not implemented")
-            continue
-
-        retval = problem.run_solution(version)
-        print(f"  {version} - returned '{retval}'")
-
-
-def workload_test(args, problem_args):
+def workload_perf(args, problem_args):
     problem = get_problem_class(args.problem)(problem_args)
     print(get_problem_name(const.PROBLEM_NAME.format(args.problem)))
 
@@ -270,6 +253,24 @@ def workload_test(args, problem_args):
         print(f"    standard deviation                      {stdev:.3f}")
 
 
+def workload_run(args, problem_args):
+    problem = get_problem_class(args.problem)(problem_args)
+    print(get_problem_name(const.PROBLEM_NAME.format(args.problem)))
+
+    if args.versions is not None:
+        versions = [const.VERSION_NAME.format(v) for v in args.versions]
+    else:
+        versions = list(problem.problem_versions.keys())
+
+    for version in versions:
+        if not problem.is_version_implemented(version):
+            print(f"  {version} - not implemented")
+            continue
+
+        retval = problem.run_solution(version)
+        print(f"  {version} - returned '{retval}'")
+
+
 def main():
     # Get and format command line arguments
     args, problem_args = argparse_setup()
@@ -282,8 +283,8 @@ def main():
         workload_info(args, problem_args)
     elif args.which == "run":
         workload_run(args, problem_args)
-    elif args.which == "test":
-        workload_test(args, problem_args)
+    elif args.which == "perf":
+        workload_perf(args, problem_args)
     return
 
 

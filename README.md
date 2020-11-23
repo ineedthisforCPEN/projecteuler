@@ -46,11 +46,11 @@ required for the solution, enter the following command
 
 `python euler.py run --problem PROBLEM -h`
 
-### Profiling a Solution Implementation
+### Check Solution Implementation Performance
 
 Profile a solution to a given problem to determine its performance and resource
 usage.\
-`python euler.py test [--count COUNT] --problem PROBLEM [--versions VERSIONS] PARAMETERS`
+`python euler.py perf [--count COUNT] --problem PROBLEM [--versions VERSIONS] PARAMETERS`
 
 The only difference between this and solution execution is the `--count`
 parameter which allows users to specify how many times the solution should be
