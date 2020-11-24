@@ -1,4 +1,5 @@
 import collections
+import numpy
 import os.path
 
 from projecteuler import constants as const
@@ -12,6 +13,7 @@ _RESOURCE_DIR = os.path.abspath(os.path.join(_BASE_DIR,
 _STRING_TO_TYPE_MAP = collections.defaultdict(lambda: _nonetypeclass, {
     "integer": int,
     "float": float,
+    "matrix": numpy.array,
     "string": str,
 })
 
@@ -41,7 +43,11 @@ def load_problem_resources(problem):
         lines = openfile.read().splitlines()
         typeclass = _STRING_TO_TYPE_MAP[lines[0]]
 
-        raw = "".join(lines[1:])
-        value = typeclass(raw)
+        if typeclass is numpy.array:
+            value = numpy.array([
+                [value for value in line.split(" ")] for line in lines[1:]
+            ], dtype=int)
+        else:
+            value = typeclass("".join(lines[1:]))
 
     return value
