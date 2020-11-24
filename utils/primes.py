@@ -154,7 +154,7 @@ def _is_prime_bruteforce(prime):
     # We've checked the cache with no conclusive results. Now it's time
     # to brute force our prime verification:
     factor = largest_prime + 2
-    while factor < math.ciel(math.sqrt(prime)):
+    while factor < math.ceil(math.sqrt(prime)):
         if prime % factor == 0:
             return False
         factor += 2
